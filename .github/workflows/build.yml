@@ -30,14 +30,8 @@ jobs:
           sudo apt-get install -y -qq --no-install-recommends \
             clang lld llvm binutils-aarch64-linux-gnu \
             flex bison bc libssl-dev libelf-dev gzip curl python3
-          # The runner may already have /swapfile active ("Text file busy"),
-          # so use a private name and only add it when swap is not enough.
-          if [ "$(swapon --show=NAME | wc -l)" -eq 0 ]; then
-            sudo fallocate -l 4G /swapfile-ci
-            sudo chmod 600 /swapfile-ci
-            sudo mkswap /swapfile-ci
-            sudo swapon /swapfile-ci
-          fi
+          # Do not touch swap at all: GitHub runners already manage it, and
+          # fallocate returns ETXTBSY on their image. 7 GB + -j2 is enough.
           free -h
 
       - name: Patch source
