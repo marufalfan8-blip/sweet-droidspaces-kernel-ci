@@ -30,7 +30,7 @@ import sys
 p = sys.argv[1] + "/drivers/kernelsu/hook/syscall_hook.h"
 s = open(p).read()
 old = "#if defined(__x86_64__)\ntypedef sys_call_ptr_t syscall_fn_t;\n#endif\n"
-new = old + "#elif defined(__aarch64__)\ntypedef long (*syscall_fn_t)(const struct pt_regs *regs);\n#endif\n"
+new = "#if defined(__x86_64__)\ntypedef sys_call_ptr_t syscall_fn_t;\n#elif defined(__aarch64__)\ntypedef long (*syscall_fn_t)(const struct pt_regs *regs);\n#endif\n"
 if "typedef long (*syscall_fn_t)" not in s:
     assert old in s, "syscall_fn_t typedef block not found"
     open(p, "w").write(s.replace(old, new, 1))
