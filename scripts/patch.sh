@@ -2,8 +2,8 @@
 # Apply local patches to the kernel source. Runs on the CI runner, never on the phone.
 set -euo pipefail
 
-KERNEL_DIR="${1:-kernel}"
-CI_DIR="${2:-ci}"
+KERNEL_DIR="$(cd "${1:-kernel}" && pwd)"
+CI_DIR="$(cd "${2:-ci}" && pwd)"
 cd "$KERNEL_DIR"
 
 # Match the ROM kernel version string.
