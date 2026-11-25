@@ -59,4 +59,16 @@ if "#include <linux/pgtable.h>" in s:
     print("[+] sucompat.c: linux/pgtable.h -> asm/pgtable.h")
 PY
 
+# 4.14 exports sys_close(), not ksys_close().
+python3 - "$KERNEL_DIR" <<'PY'
+import sys
+p = sys.argv[1] + "/drivers/kernelsu/feature/sucompat.c"
+s = open(p).read()
+s = s.replace("ksys_close(", "sys_close(")
+if "#include <linux/syscalls.h>" not in s:
+    s = s.replace("#include <linux/types.h>\n", "#include <linux/types.h>\n#include <linux/syscalls.h>\n", 1)
+open(p, "w").write(s)
+print("[+] sucompat.c: ksys_close -> sys_close")
+PY
+
 echo "[+] patched"
