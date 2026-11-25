@@ -49,4 +49,14 @@ if "#include <linux/init.h>" not in s:
     print("[+] added linux/init.h to sulog.h")
 PY
 
+# 4.14 has no linux/pgtable.h; use the arch header instead.
+python3 - "$KERNEL_DIR" <<'PY'
+import sys
+p = sys.argv[1] + "/drivers/kernelsu/feature/sucompat.c"
+s = open(p).read()
+if "#include <linux/pgtable.h>" in s:
+    open(p, "w").write(s.replace("#include <linux/pgtable.h>", "#include <asm/pgtable.h>", 1))
+    print("[+] sucompat.c: linux/pgtable.h -> asm/pgtable.h")
+PY
+
 echo "[+] patched"
