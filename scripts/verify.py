@@ -50,4 +50,10 @@ if missing or bad:
 
 ver = re.search(rb"Linux version \d[^\x00\n]{0,180}", data)
 print("OK:", ver.group(0).decode("latin1") if ver else "version unknown")
+
+expected_manager = b"2d89b50aaf1db013c2b6738f973f48b62ea21a3a8d7216bfec3521065d448458"
+if expected_manager not in data:
+    sys.exit("FAIL: embedded FinaSU manager signature hash not found")
+
 print("OK: all required options present, forbidden options absent")
+print("OK: embedded manager signature matches FinaSU v1.7.0")

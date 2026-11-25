@@ -16,10 +16,12 @@ sed -i 's/^\tdepends on SMP && CPU_FREQ_GOV_SCHEDUTIL$/\tdepends on SMP/' driver
 # Droidspaces requirements + LTO off.
 cat "$CI_DIR/patches/defconfig.add" >> arch/arm64/configs/vendor/sweet_defconfig
 
-# KernelSU (the device tree references CONFIG_KSU but the source snapshot has no driver).
+# KernelSU-Next (matches the ROM root manager family). The manager signature
+# is overridden at build time by KSU_NEXT_MANAGER_HASH / KSU_NEXT_MANAGER_SIZE
+# in the workflow so the kernel recognises the user's FinaSU manager.
 curl -fsSL --max-time 60 \
-  https://raw.githubusercontent.com/tiann/KernelSU/v0.9.5/kernel/setup.sh \
+  https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/v3.3.0/kernel/setup.sh \
   -o /tmp/ksu-setup.sh
-bash /tmp/ksu-setup.sh v0.9.5
+bash /tmp/ksu-setup.sh v3.3.0
 
 echo "[+] patched"

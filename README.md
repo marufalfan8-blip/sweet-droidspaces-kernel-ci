@@ -10,7 +10,11 @@ heat, no lag, no memory pressure.
 - `EXTRAVERSION` set to `-reforge`
 - Droidspaces kernel options applied (PID/IPC/USER namespaces, cgroups,
   overlayfs, veth, netfilter, …)
-- KernelSU v0.9.5 integrated (the defconfig references `CONFIG_KSU`)
+- KernelSU-Next v3.3.0 integrated (the defconfig references `CONFIG_KSU`)
+- Embedded manager signature overridden to the user's **FinaSU v1.7.0**
+  certificate: SHA-256 `2d89b50aaf1db013c2b6738f973f48b62ea21a3a8d7216bfec3521065d448458`,
+  DER size `0x2cc` — so the kernel should recognise `FinaSU_v1.7.0_33224-release.apk`
+  as its manager instead of reporting `is_manager: 0`.
 - `MODULE_SIG_FORCE` and `SHADOW_CALL_STACK` stay disabled
 - one Kconfig recursive-dependency fix
 
