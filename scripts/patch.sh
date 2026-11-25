@@ -71,4 +71,14 @@ open(p, "w").write(s)
 print("[+] sucompat.c: ksys_close -> sys_close")
 PY
 
+# util.h maps ksu_close_fd to ksys_close, which 4.14 does not have.
+python3 - "$KERNEL_DIR" <<'PY'
+import sys
+p = sys.argv[1] + "/drivers/kernelsu/include/util.h"
+s = open(p).read()
+if "#define ksu_close_fd ksys_close" in s:
+    open(p, "w").write(s.replace("#define ksu_close_fd ksys_close", "#define ksu_close_fd sys_close", 1))
+    print("[+] util.h: ksu_close_fd -> sys_close")
+PY
+
 echo "[+] patched"
