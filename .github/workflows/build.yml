@@ -1,7 +1,7 @@
 name: Build sweet Droidspaces kernel (off-device)
 
 # The phone never runs the compiler. The runner has 2 vCPU / 7 GB RAM and we
-# add swap, so -j2 stays safe and predictable.
+# build with -j2, so no heat, no lag, no memory pressure on the device.
 
 on:
   workflow_dispatch:
@@ -24,14 +24,12 @@ jobs:
         with:
           path: ci
 
-      - name: Install build tools and add swap
+      - name: Install build tools
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq --no-install-recommends \
             clang lld llvm binutils-aarch64-linux-gnu \
             flex bison bc libssl-dev libelf-dev gzip curl python3
-          # Do not touch swap at all: GitHub runners already manage it, and
-          # fallocate returns ETXTBSY on their image. 7 GB + -j2 is enough.
           free -h
 
       - name: Patch source
@@ -45,8 +43,6 @@ jobs:
             CROSS_COMPILE=aarch64-linux-gnu- \
             LD=ld.lld AR=llvm-ar NM=llvm-nm \
             OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump \
-            KSU_NEXT_MANAGER_HASH=2d89b50aaf1db013c2b6738f973f48b62ea21a3a8d7216bfec3521065d448458 \
-            KSU_NEXT_MANAGER_SIZE=0x2cc \
             vendor/sweet_defconfig
 
       - name: Build (-j2)
@@ -56,9 +52,7 @@ jobs:
             CC=clang CLANG_TRIPLE=aarch64-linux-gnu- \
             CROSS_COMPILE=aarch64-linux-gnu- \
             LD=ld.lld AR=llvm-ar NM=llvm-nm \
-            OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump \
-            KSU_NEXT_MANAGER_HASH=2d89b50aaf1db013c2b6738f973f48b62ea21a3a8d7216bfec3521065d448458 \
-            KSU_NEXT_MANAGER_SIZE=0x2cc
+            OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump
 
       - name: Verify kernel config
         working-directory: kernel
