@@ -37,4 +37,16 @@ if "typedef long (*syscall_fn_t)" not in s:
     print("[+] added arm64 syscall_fn_t typedef")
 PY
 
+# sulog.h uses __init/__exit but only includes linux/types.h on this tree.
+python3 - "$KERNEL_DIR" <<'PY'
+import sys
+p = sys.argv[1] + "/drivers/kernelsu/feature/sulog.h"
+s = open(p).read()
+if "#include <linux/init.h>" not in s:
+    old = "#include <linux/types.h>\n"
+    assert old in s
+    open(p, "w").write(s.replace(old, old + "#include <linux/init.h>\n", 1))
+    print("[+] added linux/init.h to sulog.h")
+PY
+
 echo "[+] patched"
