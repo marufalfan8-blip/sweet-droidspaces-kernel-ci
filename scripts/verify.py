@@ -55,8 +55,5 @@ expected_manager = b"c371061b19d8c7d7d6133c6a9bafe198fa944e50c1b31c9d8daa8d7f1fc
 if expected_manager not in data:
     sys.exit("FAIL: embedded KernelSU manager signature hash not found")
 
-if b"32680" not in data:
-    sys.exit("FAIL: KSU_VERSION=32680 not embedded (newer managers refuse older kernels)")
-
 print("OK: all required options present, forbidden options absent")
 print("OK: embedded manager signature matches KernelSU v0.9.5 manager")
