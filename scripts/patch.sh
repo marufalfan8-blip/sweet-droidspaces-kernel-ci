@@ -66,6 +66,9 @@ patch("extras.c", lambda s: s.replace("pr_info_ratelimited(", "pr_info("))
 
 # 4.14 has fsnotify_add_mark(), not fsnotify_add_inode_mark().
 patch("manager/pkg_observer.c", lambda s: s.replace("fsnotify_add_inode_mark(m, inode, 0)", "fsnotify_add_mark(m, inode, NULL, 0)"))
+
+# 4.14 has no ktime_get_boottime_seconds(); use the timespec64 API.
+patch("sulog/event.c", lambda s: s.replace("ktime_get_boottime_seconds()", "ktime_get_boottime_ts64().tv_sec"))
 PY
 
 echo "[+] patched"
