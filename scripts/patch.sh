@@ -63,6 +63,9 @@ patch("hook/arm64/patch_memory.c", patchmem)
 
 # KSUN uses a newer pr_info_ratelimited macro; 4.14 expands it to __ratelimit.
 patch("extras.c", lambda s: s.replace("pr_info_ratelimited(", "pr_info("))
+
+# 4.14 has fsnotify_add_mark(), not fsnotify_add_inode_mark().
+patch("manager/pkg_observer.c", lambda s: s.replace("fsnotify_add_inode_mark(m, inode, 0)", "fsnotify_add_mark(m, inode, NULL, 0)"))
 PY
 
 echo "[+] patched"
