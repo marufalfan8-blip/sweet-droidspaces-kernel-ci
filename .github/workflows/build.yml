@@ -43,6 +43,10 @@ jobs:
             CROSS_COMPILE=aarch64-linux-gnu- \
             LD=ld.lld AR=llvm-ar NM=llvm-nm \
             OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump \
+            KSU_VERSION=33224 \
+            KSU_MANAGER_PACKAGE=me.yuki.fina \
+            KSU_NEXT_MANAGER_HASH=2d89b50aaf1db013c2b6738f973f48b62ea21a3a8d7216bfec3521065d448458 \
+            KSU_NEXT_MANAGER_SIZE=0x2cc \
             vendor/sweet_defconfig
 
       - name: Build (-j2)
@@ -52,7 +56,11 @@ jobs:
             CC=clang CLANG_TRIPLE=aarch64-linux-gnu- \
             CROSS_COMPILE=aarch64-linux-gnu- \
             LD=ld.lld AR=llvm-ar NM=llvm-nm \
-            OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump
+            OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump \
+            KSU_VERSION=33224 \
+            KSU_MANAGER_PACKAGE=me.yuki.fina \
+            KSU_NEXT_MANAGER_HASH=2d89b50aaf1db013c2b6738f973f48b62ea21a3a8d7216bfec3521065d448458 \
+            KSU_NEXT_MANAGER_SIZE=0x2cc
 
       - name: Verify kernel config
         working-directory: kernel

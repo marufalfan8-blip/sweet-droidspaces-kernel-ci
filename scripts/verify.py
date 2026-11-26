@@ -51,9 +51,15 @@ if missing or bad:
 ver = re.search(rb"Linux version \d[^\x00\n]{0,180}", data)
 print("OK:", ver.group(0).decode("latin1") if ver else "version unknown")
 
-expected_manager = b"c371061b19d8c7d7d6133c6a9bafe198fa944e50c1b31c9d8daa8d7f1fc2d2d6"
+expected_manager = b"2d89b50aaf1db013c2b6738f973f48b62ea21a3a8d7216bfec3521065d448458"
 if expected_manager not in data:
-    sys.exit("FAIL: embedded KernelSU manager signature hash not found")
+    sys.exit("FAIL: embedded FinaSU manager signature hash not found")
+
+if b"33224" not in data:
+    sys.exit("FAIL: KSU_VERSION=33224 not embedded")
+
+if b"me.yuki.fina" not in data:
+    sys.exit("FAIL: manager package me.yuki.fina not embedded")
 
 print("OK: all required options present, forbidden options absent")
 print("OK: embedded manager signature matches KernelSU v0.9.5 manager")
