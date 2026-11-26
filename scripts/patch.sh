@@ -60,9 +60,9 @@ def patchmem(s):
     s = s.replace("__flush_icache_range", "flush_icache_range")
     return s
 patch("hook/arm64/patch_memory.c", patchmem)
-PY
 
 # KSUN uses a newer pr_info_ratelimited macro; 4.14 expands it to __ratelimit.
 patch("extras.c", lambda s: s.replace("pr_info_ratelimited(", "pr_info("))
+PY
 
 echo "[+] patched"
