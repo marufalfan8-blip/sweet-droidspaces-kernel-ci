@@ -43,6 +43,7 @@ jobs:
             CROSS_COMPILE=aarch64-linux-gnu- \
             LD=ld.lld AR=llvm-ar NM=llvm-nm \
             OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump \
+            KSU_VERSION=32680 \
             vendor/sweet_defconfig
 
       - name: Build (-j2)
@@ -52,7 +53,8 @@ jobs:
             CC=clang CLANG_TRIPLE=aarch64-linux-gnu- \
             CROSS_COMPILE=aarch64-linux-gnu- \
             LD=ld.lld AR=llvm-ar NM=llvm-nm \
-            OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump
+            OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump \
+            KSU_VERSION=32680
 
       - name: Verify kernel config
         working-directory: kernel
