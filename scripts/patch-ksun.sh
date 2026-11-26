@@ -12,9 +12,9 @@ cat "$CI_DIR/patches/defconfig.add" >> arch/arm64/configs/vendor/sweet_defconfig
 # KernelSU-Next/KSUN fork (SUSFS + BRANCH_LINK family, same as the ROM kernel).
 # Manager constants/version are overridden in the workflow make command.
 curl -fsSL --max-time 60 \
-  https://raw.githubusercontent.com/MirahSyakilla/KSUN/main/kernel/setup.sh \
-  -o /tmp/ksu-setup.sh
-bash /tmp/ksu-setup.sh
+  https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh \
+  -o /tmp/ksun-setup.sh
+bash /tmp/ksun-setup.sh legacy
 
 python3 - "$KERNEL_DIR" <<'PY'
 import os, sys
