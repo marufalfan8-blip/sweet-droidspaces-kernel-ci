@@ -10,7 +10,8 @@ heat, no lag, no memory pressure.
 - `EXTRAVERSION` set to `-reforge`
 - Droidspaces kernel options applied (PID/IPC/USER namespaces, cgroups,
   overlayfs, veth, netfilter, …)
-- KernelSU vanilla v0.9.5 integrated. Its default embedded manager hash is
+- KernelSU vanilla v1.0.0 integrated (matches KernelSU_v1.0.0_11874-release.apk).
+  Its default embedded manager hash is
   `c371061b19d8c7d7d6133c6a9bafe198fa944e50c1b31c9d8daa8d7f1fc2d2d6`, which is
   exactly the certificate of `KernelSU_v0.9.5_11872-release.apk`. Use that
   exact manager — not a "latest" manager, not FinaSU/KSUN.
