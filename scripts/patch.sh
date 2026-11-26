@@ -6,16 +6,17 @@ KERNEL_DIR="$(cd "${1:-kernel}" && pwd)"
 CI_DIR="$(cd "${2:-ci}" && pwd)"
 cd "$KERNEL_DIR"
 
-# Droidspaces requirements + LTO off (KPROBES needed by KSU-Next/KSUN).
+# Droidspaces requirements + FinaSU built-in requirements (KALLSYMS_ALL, kprobes).
 cat "$CI_DIR/patches/defconfig.add" >> arch/arm64/configs/vendor/sweet_defconfig
 
-# KernelSU-Next/KSUN fork (SUSFS + BRANCH_LINK family, same as the ROM kernel).
-# Manager constants/version are overridden in the workflow make command.
+# FinaSU v1.7.0 built-in driver (non-GKI 4.14). setup.sh clones the tagged source,
+# symlinks kernel/ to drivers/kernelsu, and wires Kconfig/Makefile.
 curl -fsSL --max-time 60 \
-  https://raw.githubusercontent.com/MirahSyakilla/KSUN/main/kernel/setup.sh \
-  -o /tmp/ksu-setup.sh
-bash /tmp/ksu-setup.sh
+  https://raw.githubusercontent.com/LyraVoid/FinaSU/v1.7.0/kernel/setup.sh \
+  -o /tmp/finasu-setup.sh
+FINASU_REF=v1.7.0 bash /tmp/finasu-setup.sh
 
+# 4.14 compatibility shims. Each patch is skipped when the file is absent.
 python3 - "$KERNEL_DIR" <<'PY'
 import os, sys
 root = sys.argv[1] + "/drivers/kernelsu"
@@ -31,17 +32,20 @@ def patch(rel, fn):
         open(p, "w").write(n)
         print("[+] patched", rel)
 
+# aarch64 syscall_fn_t typedef
 def syscall_fn(s):
     old = "#if defined(__x86_64__)\ntypedef sys_call_ptr_t syscall_fn_t;\n#endif\n"
     new = "#if defined(__x86_64__)\ntypedef sys_call_ptr_t syscall_fn_t;\n#elif defined(__aarch64__)\ntypedef long (*syscall_fn_t)(const struct pt_regs *regs);\n#endif\n"
     return s.replace(old, new, 1) if old in s and "typedef long (*syscall_fn_t)" not in s else s
 patch("hook/syscall_hook.h", syscall_fn)
+patch("hook/arm64/syscall_hook.h", syscall_fn)
 
 def sulog(s):
     if "#include <linux/init.h>" not in s:
         return s.replace("#include <linux/types.h>\n", "#include <linux/types.h>\n#include <linux/init.h>\n", 1)
     return s
 patch("feature/sulog.h", sulog)
+patch("sulog/event.c", sulog)
 
 patch("feature/sucompat.c", lambda s: s.replace("#include <linux/pgtable.h>", "#include <asm/pgtable.h>", 1))
 
@@ -61,14 +65,10 @@ def patchmem(s):
     return s
 patch("hook/arm64/patch_memory.c", patchmem)
 
-# KSUN uses a newer pr_info_ratelimited macro; 4.14 expands it to __ratelimit.
-patch("extras.c", lambda s: s.replace("pr_info_ratelimited(", "pr_info("))
-
 # 4.14 has fsnotify_add_mark(), not fsnotify_add_inode_mark().
 patch("manager/pkg_observer.c", lambda s: s.replace("fsnotify_add_inode_mark(m, inode, 0)", "fsnotify_add_mark(m, inode, NULL, 0)"))
 
-# 4.14 has no ktime_get_boottime_seconds(); its ktime_get_boottime_ts64 takes
-# an output pointer instead of returning a struct.
+# 4.14 ktime_get_boottime_ts64() takes an output pointer.
 def boottime(s):
     s = s.replace("ktime_get_boottime_seconds()", "ksu_boottime_seconds()")
     helper = (
