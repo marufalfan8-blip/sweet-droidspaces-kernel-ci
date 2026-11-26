@@ -10,12 +10,12 @@ heat, no lag, no memory pressure.
 - `EXTRAVERSION` set to `-reforge`
 - Droidspaces kernel options applied (PID/IPC/USER namespaces, cgroups,
   overlayfs, veth, netfilter, …)
-- KernelSU-Next v3.3.0 with manager signature overridden to the user's own
-  **FinaSU v1.7.0 (33224)**: SHA-256 `2d89b50aaf1db013c2b6738f973f48b62ea21a3a8d7216bfec3521065d448458`,
-  DER size `0x2cc`, package `me.yuki.fina`, `KSU_VERSION=33224`. This matches
-  the manager already installed on the device (`me.yuki.fina`, `is_manager: 1`).
-- Several 4.14 compatibility shims are applied by `scripts/patch.sh` because
-  KernelSU-Next v3.3.0 targets newer kernels.
+- KernelSU vanilla v0.9.5 (proven to compile and boot on this 4.14 tree) with
+  manager constants overridden to the user's **FinaSU v1.7.0 (33224)**:
+  SHA-256 `2d89b50aaf1db013c2b6738f973f48b62ea21a3a8d7216bfec3521065d448458`,
+  DER size `0x2cc`, package `me.yuki.fina`, `KSU_VERSION=33224`.
+  The `app_profile` prefix (version/key/uid/allow_su) has the same layout across
+  v0.9.5 and v3.x, so the manager should still list granted apps.
 - `MODULE_SIG_FORCE` and `SHADOW_CALL_STACK` stay disabled
 - one Kconfig recursive-dependency fix
 
