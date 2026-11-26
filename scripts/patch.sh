@@ -62,4 +62,7 @@ def patchmem(s):
 patch("hook/arm64/patch_memory.c", patchmem)
 PY
 
+# KSUN uses a newer pr_info_ratelimited macro; 4.14 expands it to __ratelimit.
+patch("extras.c", lambda s: s.replace("pr_info_ratelimited(", "pr_info("))
+
 echo "[+] patched"
