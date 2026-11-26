@@ -1,0 +1,76 @@
+name: Build sweet KernelSU-Next kernel (off-device)
+
+# The phone never runs the compiler. The runner has 2 vCPU / 7 GB RAM and we
+# build with -j2, so no heat, no lag, no memory pressure on the device.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout kernel source
+        uses: actions/checkout@v4
+        with:
+          repository: manipvlator/los_kernel_xiaomi_sm6150
+          ref: 3d0dea743b58f72d8fa3e76f60d6a075a210d25f
+          path: kernel
+          fetch-depth: 1
+
+      - name: Checkout CI scripts
+        uses: actions/checkout@v4
+        with:
+          path: ci
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends \
+            clang lld llvm binutils-aarch64-linux-gnu \
+            flex bison bc libssl-dev libelf-dev gzip curl python3
+          free -h
+
+      - name: Patch source
+        run: bash ci/scripts/patch-ksun.sh kernel ci
+
+      - name: Configure (-j2)
+        working-directory: kernel
+        run: |
+          make -j2 O=out ARCH=arm64 \
+            CC=clang CLANG_TRIPLE=aarch64-linux-gnu- \
+            CROSS_COMPILE=aarch64-linux-gnu- \
+            LD=ld.lld AR=llvm-ar NM=llvm-nm \
+            OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump \
+            KSU_EXPECTED_SIZE=0x3e6 \
+            KSU_EXPECTED_HASH=79e590113c4c4c0c222978e413a5faa801666957b1212a328e46c00c69821bf7 \
+            KSU_MANAGER_PACKAGE=com.rifsxd.ksunext \
+            KSU_REQUIRE_PREINIT=1 \
+            vendor/sweet_defconfig
+
+      - name: Build (-j2, keep-going to list ALL errors)
+        working-directory: kernel
+        run: |
+          make -k -j2 O=out ARCH=arm64 \
+            CC=clang CLANG_TRIPLE=aarch64-linux-gnu- \
+            CROSS_COMPILE=aarch64-linux-gnu- \
+            LD=ld.lld AR=llvm-ar NM=llvm-nm \
+            OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump \
+            KSU_EXPECTED_SIZE=0x3e6 \
+            KSU_EXPECTED_HASH=79e590113c4c4c0c222978e413a5faa801666957b1212a328e46c00c69821bf7 \
+            KSU_MANAGER_PACKAGE=com.rifsxd.ksunext \
+            KSU_REQUIRE_PREINIT=1
+
+      - name: Verify kernel config
+        working-directory: kernel
+        run: python3 ../ci/scripts/verify-ksun.py out/arch/arm64/boot/Image.gz
+
+      - name: Upload kernel Image.gz + config
+        uses: actions/upload-artifact@v4
+        with:
+          name: sweet-ksun-kernel
+          path: |
+            kernel/out/arch/arm64/boot/Image.gz
+            kernel/kernel-config.txt
+          if-no-files-found: error
