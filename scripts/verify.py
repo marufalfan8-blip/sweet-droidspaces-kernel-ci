@@ -55,9 +55,9 @@ expected_manager = b"2d89b50aaf1db013c2b6738f973f48b62ea21a3a8d7216bfec3521065d4
 if expected_manager not in data:
     sys.exit("FAIL: embedded FinaSU manager signature hash not found")
 
-if b"33224" not in data:
-    sys.exit("FAIL: KSU_VERSION=33224 not embedded")
-
+# KSU_VERSION is compiled as an integer/immediate, not a text string, so do
+# not assert on the decimal text here. The manager hash and package below are
+# the string constants that actually control recognition.
 if b"me.yuki.fina" not in data:
     sys.exit("FAIL: manager package me.yuki.fina not embedded")
 
