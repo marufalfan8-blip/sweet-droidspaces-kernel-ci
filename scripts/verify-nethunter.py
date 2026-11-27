@@ -41,7 +41,6 @@ required = [
     "CONFIG_MAC80211=y",
     "CONFIG_ATH9K_HTC=m",
     "CONFIG_CARL9170=m",
-    "CONFIG_RT2800USB=m",
     "CONFIG_RTL8187=m",
     "CONFIG_RTL8192CU=m",
     "CONFIG_USB_CONFIGFS_F_HID=y",
