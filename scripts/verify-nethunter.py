@@ -40,6 +40,7 @@ required = [
     "CONFIG_NL80211_TESTMODE=y",
     "CONFIG_MAC80211=y",
     "CONFIG_ATH9K_HTC=m",
+    "CONFIG_MT7601U=m",
     "CONFIG_CARL9170=m",
     "CONFIG_RTL8187=m",
     "CONFIG_RTL8192CU=m",
