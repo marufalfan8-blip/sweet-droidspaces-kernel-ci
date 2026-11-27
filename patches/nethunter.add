@@ -1,0 +1,14 @@
+# --- NetHunter / monitor-mode stack untuk USB Wi-Fi external ---
+# Dicoba & dipakai di sweet: TP-Link TL-WN722N v1 (AR9271) -> monitor + injection
+# ATH9K_HTC sengaja =m supaya tidak tabrakan simbol 'htc_stop' dengan driver
+# vendor Qualcomm (qca-wifi-host-cmn/htc) yang built-in.
+CONFIG_WIRELESS=y
+CONFIG_CFG80211=y
+CONFIG_NL80211_TESTMODE=y
+CONFIG_MAC80211=y
+CONFIG_ATH9K_HTC=m
+CONFIG_CARL9170=m
+CONFIG_RT2800USB=m
+CONFIG_RTL8187=m
+CONFIG_RTL8192CU=m
+CONFIG_USB_CONFIGFS_F_HID=y
